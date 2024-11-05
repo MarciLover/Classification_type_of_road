@@ -20,26 +20,26 @@ print(f'RANDOM_SEED = {settings.RANDOM_SEED}')
 device = "cuda" if torch.cuda.is_available() else "cpu"
 selected_prepared_data = load_dataset.form_dataset()
 
-load_dataset.plot_transformed_images(load_dataset.DIR_WORK_PATH, 
+load_dataset.plot_transformed_images(settings.DIR_WORK_PATH, 
                         selected_prepared_data['image_path'],
                         selected_prepared_data['label'],
                         transform=augmentation.data_transform_0, 
                         n=3,
                         seed=settings.RANDOM_SEED)
 
-train_data_2 = custom_dataset.CustomTensorDataset(load_dataset.DIR_WORK_PATH, 
+train_data_2 = custom_dataset.CustomTensorDataset(settings.DIR_WORK_PATH, 
                                                   selected_prepared_data.query('marked_split == "train"')['image_path'], 
                                                   selected_prepared_data.query('marked_split == "train"')['label'], 
                                                   transform=augmentation.data_transform_1)
 print(f'len_tain_data = {train_data_2.__len__()}')
 
-test_data_2 = custom_dataset.CustomTensorDataset(load_dataset.DIR_WORK_PATH, 
+test_data_2 = custom_dataset.CustomTensorDataset(settings.DIR_WORK_PATH, 
                                                   selected_prepared_data.query('marked_split == "test"')['image_path'], 
                                                   selected_prepared_data.query('marked_split == "test"')['label'], 
                                                   transform=augmentation.data_transform_2)
 print(f'len_test_data = {test_data_2.__len__()}')
 
-val_data_2 = custom_dataset.CustomTensorDataset(load_dataset.DIR_WORK_PATH, 
+val_data_2 = custom_dataset.CustomTensorDataset(settings.DIR_WORK_PATH, 
                                                   selected_prepared_data.query('marked_split == "val"')['image_path'], 
                                                   selected_prepared_data.query('marked_split == "val"')['label'],
                                                   transform=augmentation.data_transform_2)
@@ -74,4 +74,3 @@ plot_res_learning.confusion_matrix(y_pred_val_tensor,
                                         'val_conf_matr')
 
 compare_val_res.compare_val(y_pred_val_tensor, val_data_2)
-

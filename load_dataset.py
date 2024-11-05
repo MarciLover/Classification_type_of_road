@@ -64,7 +64,7 @@ def form_dataset():
     
     mask_path_list = list(dataset_mask_path.glob("*.png"))
     
-    splitfolders.ratio(settings.PATH_DATASET_INPUT, output="Dataset_output", seed=settings.RANDOM_SEED, ratio=(.6, .2, .2), group_prefix=None, move=False)
+    splitfolders.ratio(settings.PATH_DATASET_INPUT, output=settings.PATH_DATASET_OUTPUT, seed=settings.RANDOM_SEED, ratio=(.6, .2, .2), group_prefix=None, move=False)
     
     dataset = Path(settings.PATH_DATASET_OUTPUT)
     # train_dir = dataset / "train"
