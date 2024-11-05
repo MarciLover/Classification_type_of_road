@@ -19,7 +19,6 @@ def walk_through_dir(dir_path):
 
 def plot_transformed_images(dataset_path, df_images, df_classes, transform, n, seed):
     random.seed(seed)
-    # random_image_paths = random.sample(list(Path(dataset_path) / df_images.apply(lambda x: Path(x))), k=n)
     random_image_paths = list(Path(dataset_path) / df_images.sample(n, random_state=seed).reset_index(drop=True).apply(lambda x: Path(x)))
     random_image_class = (df_classes).sample(n, random_state=seed).reset_index(drop=True)
 
@@ -38,14 +37,12 @@ def plot_transformed_images(dataset_path, df_images, df_classes, transform, n, s
         fig.suptitle(f"Class: {random_image_class[i]}", fontsize=16)
     
         plt.savefig(path_res / f'{i}_plot_transformed_images.png')
-    # plt.show()
 
 def random_image_draw(path_list, how: int):
     
     random.seed(settings.RANDOM_SEED)
     
     random_image_path = random.choice(path_list)
-    # image_class = random_image_path.parent.stem
     img = cv2.imread(random_image_path, how)
     img_as_array = np.asarray(img)
     

@@ -15,6 +15,8 @@ PATH_DATASET_INPUT = 'C:/pythonProject1/Work_files/Dataset_input'
 PATH_DATASET_OUTPUT = 'C:/pythonProject1/Work_files/Dataset_output'
 # path for full dataset (original)
 DIR_WORK_PATH = 'C:/pythonProject1/Work_files/Datasets_other/20230404'
+# path where to save results tensorboard
+DIR_PATH_TENSORBOARD = 'C:/Users/pavel.pyrkov/AppData/Local/GitHub/Classification_of_road/tensorboard'
 
 with open(path/config_name) as f:
     data = json.load(f)

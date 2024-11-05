@@ -3,11 +3,13 @@ from torchmetrics import Accuracy
 from torch import nn
 from tqdm.auto import tqdm
 from torch.utils.tensorboard import SummaryWriter
+from pathlib import Path
 
 import earlystopping
 import settings
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
+path_tensorboard = Path(settings.DIR_PATH_TENSORBOARD) / settings.config_name.split('.')[0]
 
 loss_fn = nn.CrossEntropyLoss()
 
@@ -53,9 +55,7 @@ def val_step(model: torch.nn.Module,
             y_preds_val.append(y_pred_val.cpu())
             loss = loss_fn(val_pred_logits, y)
             val_loss += loss.item()
-            # val_pred_labels = val_pred_logits.argmax(dim=1) - данная строка изменена на строку ниже
             val_pred_labels = torch.argmax(torch.softmax(val_pred_logits, dim=1), dim=1)
-            # val_acc += ((val_pred_labels == y).sum().item()/len(val_pred_labels))
             val_acc += accuracy(val_pred_labels, y).item()
 
     y_pred_val_tensor = torch.cat(y_preds_val)        
@@ -83,7 +83,7 @@ def train(model: torch.nn.Module,
     early_stopping = earlystopping.EarlyStopping(tolerance=settings.TOLERANCE, min_delta=settings.DELTA_ACC)
     prev_val_acc = 0
     delta_prev = 0
-    writer = SummaryWriter('C:/pythonProject1/Work_files/Classification_task_py/tensorbord/config_1')
+    writer = SummaryWriter(path_tensorboard)
 
     for epoch in tqdm(range(epochs)):
         train_loss, train_acc = train_step(model=model,
@@ -130,7 +130,6 @@ def res_model(res_model):
     model_2_res = dict()
     length_2 = len(res_model['train_loss']) - 1
     for i in res_model.keys():
-        # print(i)
         if i != 'model_name':
             len(res_model['train_loss']) - 1
             model_2_res[i] = res_model[i][length_2]
