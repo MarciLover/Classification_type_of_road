@@ -1,43 +1,61 @@
 import os
 from pathlib import Path
 import json
+import torch
 
-# json file path
-path = Path('C:/Users/pavel.pyrkov/AppData/Local/GitHub/Classification_of_road/Settings') 
-# json file name
-config_name = 'config_1.json'
+path = Path('C:/pythonProject1/Work_files/Classification_task_py/Settings')
+config_name = 'config_3.json'
 
-# path annotations dataset (road masks) 
-PATH_DATASET_MASK = 'C:/pythonProject1/Work_files/all_annotations'
-# path markup dataset 
-PATH_DATASET_INPUT = 'C:/pythonProject1/Work_files/Dataset_input'
-# path where should be placed split dataset
-PATH_DATASET_OUTPUT = 'C:/pythonProject1/Work_files/Dataset_output'
-# path for full dataset (original)
-DIR_WORK_PATH = 'C:/pythonProject1/Work_files/Datasets_other/20230404'
-# path where to save results tensorboard
-DIR_PATH_TENSORBOARD = 'C:/Users/pavel.pyrkov/AppData/Local/GitHub/Classification_of_road/tensorboard'
+device = "cuda" if torch.cuda.is_available() else "cpu"
 
 with open(path/config_name) as f:
     data = json.load(f)
 
-BATCH_SIZE = data['BATCH_SIZE']
+EXP_NAME = data['EXP_NAME']
 RANDOM_SEED = data['RANDOM_SEED']
-NUM_EPOCHS = data['NUM_EPOCHS']
-TEST_SIZE = data['TEST_SIZE']
-RESIZE_IMAGE = data['RESIZE_IMAGE']
-LEARNING_RATE = data['LEARNING_RATE']
-DELTA_ACC = data['DELTA_ACC']
-TOLERANCE = data['TOLERANCE']
-NUM_FREEZE_LAYERS = data['NUM_FREEZE_LAYERS']
+PATH_RESULTS = data['PATH_RESULTS']
+vis_plot = data['vis_plot']
+
+TYPE = data['model']['TYPE']
+NUM_FREEZE_LAYERS = data['model']['NUM_FREEZE_LAYERS']
+
+TEST_SIZE = data['data']['TEST_SIZE']
+PATH_DATASET_MASK = data['data']['PATH_DATASET_MASK']
+PATH_DATASET_INPUT = data['data']['PATH_DATASET_INPUT']
+PATH_DATASET_OUTPUT = data['data']['PATH_DATASET_OUTPUT']
+DIR_WORK_PATH = data['data']['DIR_WORK_PATH']
+
+DELTA_ACC = data['earlystopping']['DELTA_ACC']
+TOLERANCE = data['earlystopping']['TOLERANCE']
+
+BATCH_SIZE_TRAIN = data['train']['BATCH_SIZE']
+LEARNING_RATE = data['train']['LEARNING_RATE']
+NUM_EPOCHS = data['train']['NUM_EPOCHS']
+
+BATCH_SIZE_VAL = data['val']['BATCH_SIZE']
+
+BATCH_SIZE_TEST = data['test']['BATCH_SIZE']
+
+RESIZE_IMAGE = data['augmentation']['RESIZE_IMAGE']
+MEAN = data['augmentation']['MEAN']
+STD = data['augmentation']['STD']
+PAD = data['augmentation']['PAD']
+PAD = data['augmentation']['PAD']
+ROTATION_FROM = data['augmentation']['ROTATION_FROM']
+ROTATION_TILL = data['augmentation']['ROTATION_TILL']
 
 def make_dir():
 
-    dir_name = config_name.split('.')[0]
-
-    path_res = Path('C:/Users/pavel.pyrkov/AppData/Local/GitHub/Classification_of_road/Results/')
+    # dir_name = config_name.split('.')[0]
+    dir_name = EXP_NAME
+    path_res = Path(PATH_RESULTS)
     path_res = path_res / dir_name
-    if not os.path.isdir(path_res):
-        os.mkdir(path_res)
+
+    Path.mkdir(path_res, exist_ok=True)
+
+    # if not os.path.isdir(path_res):
+    #    os.mkdir(path_res)
 
     return path_res
+
+path_res = make_dir()

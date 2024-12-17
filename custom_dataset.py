@@ -5,7 +5,7 @@ import cv2
 from torch.utils.data import Dataset
 from typing import Tuple, Dict, List
 
-def find_classes(dataframe: pd.DataFrame) -> Tuple[List[str], Dict[str, int]]:
+def find_classes(dataframe: pd.Series) -> Tuple[List[str], Dict[str, int]]:
 
     classes = sorted(entry for entry in dataframe.unique())
     if not classes:
@@ -16,7 +16,7 @@ def find_classes(dataframe: pd.DataFrame) -> Tuple[List[str], Dict[str, int]]:
 
 class CustomTensorDataset(Dataset):
     # TensorDataset with support of transforms.
-    def __init__(self, work_dir: str, rgb_paths: pd.DataFrame, rgb_labels: pd.DataFrame, transform=None) -> None:
+    def __init__(self, work_dir: str, rgb_paths: pd.Series, rgb_labels: pd.Series, transform=None) -> None:
         
         rgb_paths.reset_index(drop=True, inplace=True)
         rgb_labels.reset_index(drop=True, inplace=True)
@@ -34,12 +34,12 @@ class CustomTensorDataset(Dataset):
         else:
             img_path = Path(self.paths[idx])
             image = torch.Tensor(cv2.imread(img_path, 1))
-            label = self.rgb_labels[idx]
+            # label = self.rgb_labels[idx]
 
             if self.transform:
                 image = self.transform(image.permute(2, 0, 1))
 
-            return image, self.class_to_idx[label]
+            return image, self.targets[idx]
 
     def __len__(self):
         return len(self.paths)

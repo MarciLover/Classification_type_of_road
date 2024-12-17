@@ -5,86 +5,55 @@ from torchinfo import summary
 from timeit import default_timer as timer
 
 import eval_metric
-import learn_models
+import train
 import settings
 
-device = "cuda" if torch.cuda.is_available() else "cpu"
-
-def define_model(class_names):
-    model = models.resnet18(pretrained=True).to(device)
+def create_model(class_names):
+    model = models.resnet18(pretrained=True).to(settings.device)
     model.fc = nn.Linear(512, len(class_names))
     # summary(model_1, input_size=[1, 3, 256, 256])
     return model
 
-def freeze_layers(model, k):
-    if k == 0:
-        return model
+def freeze_layers(model, num_freeze_layers):
 
-    elif k == 1:
+    if num_freeze_layers > 4 or num_freeze_layers < 0:
+        # print(f'number of freeze layers should be in range [0, ... 4]')
+        raise ValueError(f'number of freeze layers should be in range [0, ... 4]')
+
+    if num_freeze_layers >= 1:
         for layer in model.layer1:
             # layer.requires_grad = False
             layer.requires_grad_(False)
-        return model
-
-    elif k == 2:
-        for layer in model.layer1:
+    if num_freeze_layers >= 2:
+        for layer in model.layer2:
             # layer.requires_grad = False
             layer.requires_grad_(False)
-
-        for layer in model.layer2:
-            #layer.requires_grad = False
-            layer.requires_grad_(False)
-        return model
-    
-    elif k == 3:
-        for layer in model.layer1:
-            #layer.requires_grad = False
-            layer.requires_grad_(False)
-
-        for layer in model.layer2:
-                #layer.requires_grad = False
-                layer.requires_grad_(False)
-
+    if num_freeze_layers >= 3:
         for layer in model.layer3:
-                # layer.requires_grad = False
-                layer.requires_grad_(False)
-        return model
-    
-    elif k == 4:
-        for layer in model.layer1:
             # layer.requires_grad = False
             layer.requires_grad_(False)
-
-        for layer in model.layer2:
-                # layer.requires_grad = False
-                layer.requires_grad_(False)
-
-        for layer in model.layer3:
-                # layer.requires_grad = False
-                layer.requires_grad_(False)
-
+    if num_freeze_layers == 4:
         for layer in model.layer4:
-                # layer.requires_grad = False
-                layer.requires_grad_(False)
-        return model
-    
-    if k > 4 or k < 0:
-         print(f'number of freeze layers should be in range [0, ... 4]')
+            # layer.requires_grad = False
+            layer.requires_grad_(False)     
 
-def optimizer_form(model):
+    return model
+
+def create_optimizer(model):
     optimizer = torch.optim.Adam(params=model.parameters(), lr=settings.LEARNING_RATE)
     return optimizer
 
-def start_learn(model, train_dataloader, val_dataloader, class_names):
+def train_model(model, train_dataloader, val_dataloader, class_names):
     start_time = timer()
 
-    model_res, y_pred_val_tensor = learn_models.train(model=model, 
+    model_res, y_pred_val_tensor = train.train(model=model, 
                             train_dataloader=train_dataloader,
                             val_dataloader=val_dataloader,
-                            optimizer=optimizer_form(model),
-                            loss_fn=learn_models.loss_fn,
-                            accuracy=eval_metric.form_metric(class_names, device), 
-                            epochs=settings.NUM_EPOCHS)
+                            optimizer=create_optimizer(model),
+                            loss_fn=train.loss_fn,
+                            accuracy=eval_metric.form_metric(class_names, settings.device), 
+                            epochs=settings.NUM_EPOCHS,
+                            device=settings.device)
 
     end_time = timer()
     learn_time = end_time-start_time

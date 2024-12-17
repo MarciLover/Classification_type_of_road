@@ -1,20 +1,20 @@
 from torch.utils.data import DataLoader
 import settings
 
-def start_dataloader(train_data_2, val_data_2, test_data_2):
-    train_dataloader_2 = DataLoader(train_data_2, 
-                                    batch_size=settings.BATCH_SIZE,
-                                    # num_workers=1,
+def create_dataloaders(train_data, val_data, test_data, num_workers = None):
+    train_dataloader = DataLoader(train_data, 
+                                    batch_size=settings.BATCH_SIZE_TRAIN,
+                                    # num_workers=num_workers,
                                     shuffle=True)
 
-    val_dataloader_2 = DataLoader(val_data_2, 
-                                    batch_size=settings.BATCH_SIZE, 
-                                    # num_workers=1, 
+    val_dataloader = DataLoader(val_data, 
+                                    batch_size=settings.BATCH_SIZE_VAL, 
+                                    # num_workers=num_workers, 
                                     shuffle=False)
 
-    test_dataloader_2 = DataLoader(test_data_2, 
-                                    batch_size=settings.BATCH_SIZE, 
-                                    # num_workers=1, 
+    test_dataloader = DataLoader(test_data, 
+                                    batch_size=settings.BATCH_SIZE_TEST, 
+                                    # num_workers=num_workers, 
                                     shuffle=False)
     
-    return train_dataloader_2, val_dataloader_2, test_dataloader_2
+    return train_dataloader, val_dataloader, test_dataloader
